@@ -21,5 +21,7 @@ Examples of an output
 
 ## Contact
 Zijie Zhao - Code Author and maintainer
+
 Department of Earth System Science, University of California Irvine
+
 zijiezhaomj@gmail.com;zijie.zhao@utas.edu.au;zijiz26@uci.edu
