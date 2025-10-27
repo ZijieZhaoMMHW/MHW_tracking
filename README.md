@@ -1,5 +1,8 @@
-# Temperature Extreme Tracking and Normalizing  
-Methods to track and normalize temperature extreme objects. Specifically:  
+# Cell Method: Heatwave Tracking and Normalizing
+This package provides methods to track and normalize heatwave (HW) objects based on the Cell Method framework.
+It enables the identification, tracking, and unification of extreme events across spatial and temporal scales.
+By mapping multiscale HW events into a unified structural framework, this method allows direct comparison of event dynamics.
+Its applications are not limited to HWs and MHWs, but can also be extended to other extremes such as precipitation and drought.
 
 ## Tracking - `hwtrack.m`  
 The tracking method to identify and track spatially contiguous extremes that allows nouniform lon-lat grids.  
