@@ -18,7 +18,7 @@ Analyzing track entities as sequences of moving objects from a composite perspec
 %Example
 tracks_normalized = spn(tracks, property, scale);
 ```
-Where `tracks` is the output from `hwtrack.m`. `property` is the 3D dataset you want to project into the domain of moving tracks, which can be temperature, sensible heat flux, or any other variable. `scale` indicates the size of the normalized domain relative to the maximum extent of tracks. When `scale=1`, it is identical to the approach used in Holbrook et al. (submitted) and Zhao et al. (submitted); when it varies, it corresponds to the Cell Method proposed in Bian et al. (submitted).
+Where `tracks` is the output from `hwtrack.m`. `property` is the 3D dataset you want to project into the domain of moving tracks, which can be temperature, sensible heat flux, or any other variable. `scale` indicates the size of the normalized domain relative to the maximum extent of tracks. 
 
 Examples of an output  
 ![HW Morphological](https://github.com/ZijieZhaoMMHW/MHW_tracking/blob/main/mhwvsmhw_dist7.gif)
