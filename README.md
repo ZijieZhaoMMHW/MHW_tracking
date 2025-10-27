@@ -1,7 +1,7 @@
 # Temperature Extreme Tracking and Normalizing  
 Methods to track and normalize temperature extreme objects. Specifically:  
 
-## Tracking - `hwtrack_nouniform.m`  
+## Tracking - `hwtrack.m`  
 The tracking method to identify and track spatially contiguous extremes is adapted from Sun et al. (2023). The code is originally written by [Di Sun](https://github.com/cindyisok) and is modified here into a parameter-varying function that allows nouniform lon-lat grids.  
 ```
 %Example
