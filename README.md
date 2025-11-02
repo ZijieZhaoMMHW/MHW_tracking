@@ -23,16 +23,4 @@ Where `tracks` is the output from `hwtrack.m`. `property` is the 3D dataset you 
 Examples of an output  
 ![HW Morphological](https://github.com/ZijieZhaoMMHW/MHW_tracking/blob/main/mhwvsmhw_dist7.gif)
 
-## Contact  
-Zijie Zhao – Code author and maintainer; Framework Developer-Original 
 
-zijiezhaomj@gmail.com; zijie.zhao@utas.edu.au
-
-Department of Earth System Science, University of California Irvine
-
-
-Ce Bian – Framework developer-Cell 
-
-cebian@ldeo.columbia.edu
-
-Department of Earth and Environmental Sciences, Columbia University  
