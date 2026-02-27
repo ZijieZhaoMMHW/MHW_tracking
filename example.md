@@ -66,5 +66,11 @@ for i=1:size(label_used,3)
 end
 ```
 ![test](https://github.com/ZijieZhaoMMHW/MHW_tracking/blob/main/tas_mhw.gif)
-
 ## Normalize and visualize it
+The function `spn.m` can be used to normalize the shape- and size-varying MHW tracks following the method given by [Zhao et al. (2026)](https://www.nature.com/articles/s41598-026-40354-4). The key idea is to rescale all shape- and size-varying MHW tracks into a unified circle so that they can be analysed from a composite perspective. We can use the 2015-16 Tasman Sea MHW track as an example data to run a case study. 
+```matlab
+
+```
+
+
+
