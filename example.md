@@ -139,11 +139,13 @@ end
 The SST anomalies associated with the MHW track have been normalized and mapped onto a unit circle, the radius of which represents the maximum spatial extent reached by the MHW track over its lifespan.
 
 ## Normalize and visualize it with background information
-From the GIF we made in the last section, you can clear see only regions in the circle corresponding to the MHW track are shaded based on given SST anomaly, while regions outside the MHW track are indicated as 0. If you want to retain the background information, set the fourth input in `spn.m` as 1 rather than 0.
+From the GIF created in the previous section, you can clearly see that only regions within the circle corresponding to the MHW track are shaded based on the given SST anomaly, while areas outside the MHW track are set to 0. To retain the background information, set the fourth input argument in `spn.m` to 1 instead of 0.
+
 ```matlab
 [~, sst_sp, ~, x_full, y_full] = spn(tracks, lon_used, lat_used, data_anom, 1);
 ```
 ![test1](https://github.com/ZijieZhaoMMHW/MHW_tracking/blob/main/tas_mhw_norm1.gif)
+As shown, all SST anomalies are now retained and normalized into the unit circle, with land and regions outside the domain displayed as blank.
 
 
 
