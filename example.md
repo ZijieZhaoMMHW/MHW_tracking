@@ -67,10 +67,77 @@ end
 ```
 ![test](https://github.com/ZijieZhaoMMHW/MHW_tracking/blob/main/tas_mhw.gif)
 ## Normalize and visualize it
-The function `spn.m` can be used to normalize the shape- and size-varying MHW tracks following the method given by [Zhao et al. (2026)](https://www.nature.com/articles/s41598-026-40354-4). The key idea is to rescale all shape- and size-varying MHW tracks into a unified circle so that they can be analysed from a composite perspective. We can use the 2015-16 Tasman Sea MHW track as an example data to run a case study. 
-```matlab
+The function `spn.m` is used to normalize marine heatwave (MHW) tracks with varying shapes and sizes, following the method described by Zhao et al. (2026). The core idea is to rescale all MHW tracks into a unified unit circle, enabling composite analysis despite differences in geometry and spatial extent.
 
+Here, we use the 2015–16 Tasman Sea MHW track as a case study.
+
+First, load the SST anomaly dataset `data_anom`, which serves as a proxy for MHW intensity. The variable `data_anom` is a three-dimensional array representing the tracked property (here, SST anomaly) during the MHW event. Its temporal dimension (i.e., the length of the third dimension) must match the duration of the target MHW track (230 days in this case).
+```matlab
+[~, sst_sp, ~, x_full, y_full] = spn(tracks, lon_used, lat_used, data_anom, 0);
 ```
+The output `sst_sp` contains the normalized property field mapped onto the unit circle. The corresponding normalized spatial coordinates are given by `x_full` and `y_full`.
+
+The following code can be used for visualization：
+```matlab
+xloc=tracks.xloc;
+yloc=tracks.yloc;
+ts=tracks.day;
+date_used=datevec(datenum(1982,1,1)+ts-1);
+label_used=NaN(length(lon_used),length(lat_used),length(xloc));
+
+for i=1:length(xloc)
+    label_here=NaN(length(lon_used),length(lat_used));
+    ind=sub2ind([length(lon_used),length(lat_used)],double(xloc{i}),double(yloc{i}));
+    label_here(ind)=1;
+    label_used(:,:,i)=label_here;
+end
+sst_here=sst_sp{1};
+for i=1:size(sst_here,3)
+    figure('pos',[287   299   621   506])
+    subplot(2,1,1)
+    m_pcolor(lon_used,lat_used,(label_used(:,:,i))');
+    shading flat
+    colormap([1 0 0]);
+    caxis([0 1.2]);
+    m_coast('patch',[0.7 0.7 0.7],'linewidth',2);
+    m_grid('linewidth',2);
+    title(datestr(date_used(i,:)),'fontsize',16,'fontweight','bold');
+    set(gcf,'color','w');
+    
+    subplot(2,1,2)
+    pcolor(x_full,y_full,sst_here(:,:,i));
+    colormap(cmocean('amp'));
+    shading flat
+    s=colorbar('fontsize',12);
+    s.Label.String='^{o}C';
+    caxis([0 5]);
+    xlabel('lon');ylabel('lat');
+    set(gca,'fontsize',10,'fontname','consolas');
+   title(datestr(date_used(i,:)),'fontsize',16,'fontweight','bold');
+   axis equal
+   set(gcf,'color','w');
+   xlim([-1 1]);ylim([-1 1]);
+   box on
+   %grid on
+   set(gca,'linewidth',2);
+   %grid off
+    set(gcf,'color','w');
+   frame=getframe(gcf);
+   im=frame2im(frame);
+   [I,map]=rgb2ind(im,256);
+   if i==1
+        imwrite(I,map,['tas_mhw_norm.gif'],'gif', 'Loopcount',inf,'DelayTime',0.5);
+   else
+        imwrite(I,map,['tas_mhw_norm.gif'],'gif','WriteMode','append','DelayTime',0.5);
+   end
+   
+   close all
+   
+end
+```
+![test0](https://github.com/ZijieZhaoMMHW/MHW_tracking/blob/main/tas_mhw_norm.gif)
+
+
 
 
 
