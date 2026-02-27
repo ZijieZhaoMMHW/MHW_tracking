@@ -20,9 +20,51 @@ tracks =
     split_day: [38×1 double]
 ```
 This record represents a marine heatwave (MHW) track lasting 230 days, with temporal information stored in `day` and the corresponding grid-cell indices along longitude and latitude stored in `xloc` and `yloc`, respectively. 
-The event begins on the 12,329th day of the record. Given that the MHWs were detected over the period 1982–2020, this corresponds to an original calendar date of October 3, 2015. The MHWs are detected in a 400*160 (Lon*Lat) domain indicated by the location data `lonlat_used.mat`
+The event begins on the 12,329th day of the record. Given that the MHWs were detected over the period 1982–2020, this corresponds to an original calendar date of October 3, 2015. The MHWs are detected in a 400 X 160 (Lon X Lat) domain indicated by the location data `lonlat_used.mat`
 
 You can use the following codes to draw a quick GIF to visualize this event.
 ```matlab
+load('tracks_tas');
+load('lonlat_used.mat')
 
+xloc=tracks(:).xloc;
+yloc=tracks(:).yloc;
+ts=tracks(:).day;
+date_used=datevec(datenum(1982,1,1)+ts-1);
+
+% label_used is a 3D data where 1 indicates the existence of MHWs
+label_used=NaN(length(lon_used),length(lat_used),length(xloc));
+
+for i=1:length(xloc)
+    label_here=NaN(length(lon_used),length(lat_used));
+    ind=sub2ind([length(lon_used),length(lat_used)],double(xloc{i}),double(yloc{i}));
+    label_here(ind)=1;
+    label_used(:,:,i)=label_here;
+end
+
+for i=1:size(label_used,3)
+    figure('pos',[287   299   621   506])
+    m_pcolor(lon_used,lat_used,(label_used(:,:,i))');
+    shading flat
+    colormap([1 0 0]);
+    caxis([0 1.2]);
+    m_coast('patch',[0.7 0.7 0.7],'linewidth',2);
+    m_grid('linewidth',2);
+    title(datestr(date_used(i,:)),'fontsize',16,'fontweight','bold');
+    
+   set(gcf,'color','w');
+   frame=getframe(gcf);
+   im=frame2im(frame);
+   [I,map]=rgb2ind(im,256);
+   if i==1
+        imwrite(I,map,['tas_mhw.gif'],'gif', 'Loopcount',inf,'DelayTime',0.5);
+   else
+        imwrite(I,map,['tas_mhw.gif'],'gif','WriteMode','append','DelayTime',0.5);
+   end
+   
+   close all
+end
 ```
+![test](https://github.com/ZijieZhaoMMHW/MHW_tracking/blob/main/tas_mhw.gif)
+
+## Normalize and visualize it
