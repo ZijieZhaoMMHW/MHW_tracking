@@ -21,4 +21,7 @@ Analyzing track entities as sequences of moving objects from a composite perspec
 Examples of an output  
 ![HW Morphological](https://github.com/ZijieZhaoMMHW/MHW_tracking/blob/main/mhwvsmhw_dist7.gif)
 
+## Example
+A very rough and unpolished example can be found [here](https://github.com/ZijieZhaoMMHW/MHW_tracking/blob/main/example.md). Better documentions and more examples will be included later.
+
 

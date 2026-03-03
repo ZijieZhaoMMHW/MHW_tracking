@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MHW Track Normalization — Example</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=JetBrains+Mono:wght@300;400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ocean-deep: #0a1628;
+    --ocean-mid: #0d2245;
+    --ocean-surface: #1a3a6b;
+    --heat-red: #ff4d2e;
+    --heat-orange: #ff8c42;
+    --heat-amber: #ffbe00;
+    --seafoam: #4ecdc4;
+    --cool-blue: #a8d8ea;
+    --text-primary: #f0f4ff;
+    --text-secondary: #8aa4c8;
+    --text-muted: #4a6a9a;
+    --border: rgba(78, 205, 196, 0.2);
+    --code-bg: #060f1e;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--ocean-deep);
+    color: var(--text-primary);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    line-height: 1.75;
+    overflow-x: hidden;
+  }
+
+  /* Animated ocean background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: 
+      radial-gradient(ellipse 80% 60% at 20% 80%, rgba(255,77,46,0.08) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 80% 20%, rgba(78,205,196,0.06) 0%, transparent 50%),
+      radial-gradient(ellipse 100% 80% at 50% 50%, rgba(13,34,69,0.9) 0%, var(--ocean-deep) 100%);
+    z-index: -1;
+    animation: drift 20s ease-in-out infinite alternate;
+  }
+
+  @keyframes drift {
+    from { opacity: 0.8; transform: scale(1); }
+    to { opacity: 1; transform: scale(1.05); }
+  }
+
+  /* Header */
+  header {
+    padding: 5rem 2rem 3rem;
+    max-width: 860px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  .tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    font-weight: 400;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--seafoam);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .tag::before {
+    content: '';
+    width: 24px;
+    height: 1px;
+    background: var(--seafoam);
+  }
+
+  h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    line-height: 1.1;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
+    margin-bottom: 1.5rem;
+  }
+
+  h1 em {
+    font-style: italic;
+    color: var(--heat-orange);
+  }
+
+  .subtitle {
+    font-size: 1.05rem;
+    color: var(--text-secondary);
+    max-width: 560px;
+    line-height: 1.8;
+    border-left: 2px solid var(--seafoam);
+    padding-left: 1.25rem;
+    margin-top: 1.5rem;
+  }
+
+  /* Divider */
+  .wave-divider {
+    max-width: 860px;
+    margin: 2rem auto;
+    padding: 0 2rem;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--seafoam), transparent);
+    opacity: 0.3;
+  }
+
+  /* Main content */
+  main {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 1rem 2rem 6rem;
+  }
+
+  /* Sections */
+  section {
+    margin-bottom: 4rem;
+    opacity: 0;
+    transform: translateY(24px);
+    animation: fadeUp 0.7s ease forwards;
+  }
+
+  section:nth-child(1) { animation-delay: 0.1s; }
+  section:nth-child(2) { animation-delay: 0.25s; }
+  section:nth-child(3) { animation-delay: 0.4s; }
+  section:nth-child(4) { animation-delay: 0.55s; }
+
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(1.5rem, 3vw, 2.2rem);
+    color: var(--text-primary);
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    letter-spacing: -0.01em;
+  }
+
+  h2::before {
+    content: '';
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--heat-red);
+    box-shadow: 0 0 12px var(--heat-red);
+    flex-shrink: 0;
+  }
+
+  p {
+    color: var(--text-secondary);
+    margin-bottom: 1.25rem;
+    font-size: 0.975rem;
+  }
+
+  p strong {
+    color: var(--text-primary);
+    font-weight: 500;
+  }
+
+  /* Inline code */
+  code:not(pre code) {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.82em;
+    background: rgba(78, 205, 196, 0.1);
+    border: 1px solid rgba(78, 205, 196, 0.2);
+    color: var(--seafoam);
+    padding: 0.15em 0.45em;
+    border-radius: 4px;
+  }
+
+  /* Code blocks */
+  .code-block {
+    position: relative;
+    margin: 2rem 0;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+
+  .code-header {
+    background: rgba(78, 205, 196, 0.05);
+    border-bottom: 1px solid var(--border);
+    padding: 0.6rem 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .code-lang {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--seafoam);
+    opacity: 0.7;
+  }
+
+  .code-dots {
+    display: flex;
+    gap: 5px;
+  }
+
+  .code-dots span {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    opacity: 0.5;
+  }
+
+  .code-dots span:nth-child(1) { background: #ff5f57; }
+  .code-dots span:nth-child(2) { background: #febc2e; }
+  .code-dots span:nth-child(3) { background: #28c840; }
+
+  pre {
+    background: var(--code-bg);
+    padding: 1.5rem 1.25rem;
+    overflow-x: auto;
+    margin: 0;
+  }
+
+  pre code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+    line-height: 1.8;
+    color: #c8d8f8;
+    background: none;
+    border: none;
+    padding: 0;
+  }
+
+  /* Struct output box */
+  .struct-box {
+    background: var(--code-bg);
+    border: 1px solid rgba(255, 190, 0, 0.2);
+    border-left: 3px solid var(--heat-amber);
+    border-radius: 8px;
+    padding: 1.25rem 1.5rem;
+    margin: 1.5rem 0;
+  }
+
+  .struct-box pre {
+    background: none;
+    padding: 0;
+  }
+
+  .struct-box code {
+    color: #ffe082;
+    font-size: 0.8rem;
+  }
+
+  /* Info cards */
+  .info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin: 1.5rem 0;
+  }
+
+  @media (max-width: 600px) {
+    .info-grid { grid-template-columns: 1fr; }
+  }
+
+  .info-card {
+    background: rgba(255,255,255,0.02);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.1rem 1.25rem;
+    transition: border-color 0.3s, background 0.3s;
+  }
+
+  .info-card:hover {
+    border-color: rgba(78, 205, 196, 0.4);
+    background: rgba(78, 205, 196, 0.03);
+  }
+
+  .info-card .label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--text-muted);
+    margin-bottom: 0.4rem;
+  }
+
+  .info-card .value {
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    font-weight: 400;
+  }
+
+  /* GIF showcase */
+  .gif-showcase {
+    margin: 2.5rem 0;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: var(--code-bg);
+    text-align: center;
+  }
+
+  .gif-showcase-header {
+    padding: 0.8rem 1.25rem;
+    background: rgba(255, 77, 46, 0.05);
+    border-bottom: 1px solid rgba(255, 77, 46, 0.15);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--heat-red);
+    text-align: left;
+    letter-spacing: 0.1em;
+  }
+
+  .gif-showcase img {
+    max-width: 100%;
+    display: block;
+    margin: 0 auto;
+  }
+
+  .gif-caption {
+    padding: 0.75rem 1.25rem;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace;
+    border-top: 1px solid var(--border);
+    text-align: left;
+  }
+
+  /* Callout box */
+  .callout {
+    background: rgba(78, 205, 196, 0.05);
+    border: 1px solid rgba(78, 205, 196, 0.25);
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    margin: 1.75rem 0;
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    position: relative;
+    padding-left: 2.5rem;
+  }
+
+  .callout::before {
+    content: '◈';
+    position: absolute;
+    left: 1rem;
+    top: 1.2rem;
+    color: var(--seafoam);
+    font-size: 0.9rem;
+  }
+
+  /* Function signature */
+  .fn-sig {
+    background: rgba(255, 140, 66, 0.06);
+    border: 1px solid rgba(255, 140, 66, 0.2);
+    border-radius: 10px;
+    padding: 1rem 1.5rem;
+    margin: 1.5rem 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.85rem;
+    color: var(--heat-orange);
+    line-height: 1.6;
+  }
+
+  .fn-sig .comment {
+    color: var(--text-muted);
+    font-size: 0.78rem;
+  }
+
+  /* Footer */
+  footer {
+    text-align: center;
+    padding: 3rem 2rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+    border-top: 1px solid rgba(255,255,255,0.05);
+  }
+
+  footer a {
+    color: var(--seafoam);
+    text-decoration: none;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--ocean-deep); }
+  ::-webkit-scrollbar-thumb { background: var(--ocean-surface); border-radius: 3px; }
+
+  /* Keyword highlighting in code */
+  .kw { color: #79b8ff; }
+  .fn { color: #b392f0; }
+  .str { color: #9ecbff; }
+  .num { color: #79b8ff; }
+  .cmt { color: #6a737d; font-style: italic; }
+  .var { color: #ffea7f; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="tag">MHW_tracking · Sun et al. (2023)</div>
+  <h1>Normalize <em>MHW</em> Tracks</h1>
+  <p class="subtitle">
+    An example walkthrough for normalizing Marine Heatwave tracks identified using the spatially coherent method provided by Sun et al. (2023).
+  </p>
+</header>
+
+<div class="wave-divider"></div>
+
+<main>
+
+  <!-- Section 1: The 2015-2016 Tasman Sea MHW -->
+  <section>
+    <h2>The 2015–2016 Tasman Sea Marine Heatwaves</h2>
+
+    <p>
+      The data file <code>tracks_tas.mat</code> contains a three-dimensional dataset (Lon–Lat–Time) generated by the function <code>hwtrack.m</code>. It is stored as a structured array with the following contents:
+    </p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <div class="code-dots"><span></span><span></span><span></span></div>
+        <span class="code-lang">MATLAB</span>
+      </div>
+      <pre><code><span class="fn">load</span>(<span class="str">'tracks_tas.mat'</span>);
+>> tracks</code></pre>
+    </div>
+
+    <div class="struct-box">
+      <pre><code>tracks = 
+
+      struct:
+
+      day: [230×1 double]
+     xloc: {230×1 cell}
+     yloc: {230×1 cell}
+  ori_day: 12329
+ori_order: 3
+split_num: [38×1 double]
+split_day: [38×1 double]</code></pre>
+    </div>
+
+    <p>
+      This record represents a marine heatwave (MHW) track lasting <strong>230 days</strong>, with temporal information stored in <code>day</code> and the corresponding grid-cell indices along longitude and latitude stored in <code>xloc</code> and <code>yloc</code>, respectively.
+    </p>
+
+    <div class="info-grid">
+      <div class="info-card">
+        <div class="label">Event Start</div>
+        <div class="value">Day 12,329 → <strong>Oct 3, 2015</strong></div>
+      </div>
+      <div class="info-card">
+        <div class="label">Duration</div>
+        <div class="value"><strong>230 days</strong></div>
+      </div>
+      <div class="info-card">
+        <div class="label">Detection Period</div>
+        <div class="value">1982 – 2020</div>
+      </div>
+      <div class="info-card">
+        <div class="label">Domain</div>
+        <div class="value">400 × 160 (Lon × Lat)</div>
+      </div>
+    </div>
+
+    <p>Use the following code to draw a quick GIF to visualize this event:</p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <div class="code-dots"><span></span><span></span><span></span></div>
+        <span class="code-lang">MATLAB</span>
+      </div>
+      <pre><code><span class="fn">load</span>(<span class="str">'tracks_tas'</span>);
+<span class="fn">load</span>(<span class="str">'lonlat_used.mat'</span>)
+
+<span class="var">xloc</span> = tracks(:).xloc;
+<span class="var">yloc</span> = tracks(:).yloc;
+<span class="var">ts</span>   = tracks(:).day;
+<span class="var">date_used</span> = <span class="fn">datevec</span>(<span class="fn">datenum</span>(<span class="num">1982</span>,<span class="num">1</span>,<span class="num">1</span>) + ts - <span class="num">1</span>);
+
+<span class="cmt">% label_used is a 3D data where 1 indicates the existence of MHWs</span>
+<span class="var">label_used</span> = <span class="fn">NaN</span>(<span class="fn">length</span>(lon_used), <span class="fn">length</span>(lat_used), <span class="fn">length</span>(xloc));
+
+<span class="kw">for</span> i = <span class="num">1</span>:<span class="fn">length</span>(xloc)
+    <span class="var">label_here</span> = <span class="fn">NaN</span>(<span class="fn">length</span>(lon_used), <span class="fn">length</span>(lat_used));
+    <span class="var">ind</span> = <span class="fn">sub2ind</span>([<span class="fn">length</span>(lon_used), <span class="fn">length</span>(lat_used)], ...
+                  <span class="fn">double</span>(xloc{i}), <span class="fn">double</span>(yloc{i}));
+    label_here(ind) = <span class="num">1</span>;
+    label_used(:,:,i) = label_here;
+<span class="kw">end</span>
+
+<span class="kw">for</span> i = <span class="num">1</span>:<span class="fn">size</span>(label_used, <span class="num">3</span>)
+    <span class="fn">figure</span>(<span class="str">'pos'</span>,[<span class="num">287 299 621 506</span>])
+    <span class="fn">m_pcolor</span>(lon_used, lat_used, (label_used(:,:,i))');
+    <span class="fn">shading</span> flat
+    <span class="fn">colormap</span>([<span class="num">1 0 0</span>]);
+    <span class="fn">caxis</span>([<span class="num">0 1.2</span>]);
+    <span class="fn">m_coast</span>(<span class="str">'patch'</span>,[<span class="num">0.7 0.7 0.7</span>],<span class="str">'linewidth'</span>,<span class="num">2</span>);
+    <span class="fn">m_grid</span>(<span class="str">'linewidth'</span>,<span class="num">2</span>);
+    <span class="fn">title</span>(<span class="fn">datestr</span>(date_used(i,:)),<span class="str">'fontsize'</span>,<span class="num">16</span>,<span class="str">'fontweight'</span>,<span class="str">'bold'</span>);
+    <span class="fn">set</span>(<span class="fn">gcf</span>,<span class="str">'color'</span>,<span class="str">'w'</span>);
+    
+    <span class="var">frame</span> = <span class="fn">getframe</span>(<span class="fn">gcf</span>);
+    <span class="var">im</span> = <span class="fn">frame2im</span>(frame);
+    [<span class="var">I</span>,<span class="var">map</span>] = <span class="fn">rgb2ind</span>(im, <span class="num">256</span>);
+    <span class="kw">if</span> i == <span class="num">1</span>
+        <span class="fn">imwrite</span>(I, map, <span class="str">'tas_mhw.gif'</span>, <span class="str">'gif'</span>, <span class="str">'Loopcount'</span>, inf, <span class="str">'DelayTime'</span>, <span class="num">0.5</span>);
+    <span class="kw">else</span>
+        <span class="fn">imwrite</span>(I, map, <span class="str">'tas_mhw.gif'</span>, <span class="str">'gif'</span>, <span class="str">'WriteMode'</span>, <span class="str">'append'</span>, <span class="str">'DelayTime'</span>, <span class="num">0.5</span>);
+    <span class="kw">end</span>
+    <span class="fn">close</span> all
+<span class="kw">end</span></code></pre>
+    </div>
+
+    <div class="gif-showcase">
+      <div class="gif-showcase-header">▶ OUTPUT · tas_mhw.gif</div>
+      <img src="https://github.com/ZijieZhaoMMHW/MHW_tracking/blob/main/tas_mhw.gif?raw=true" alt="Tasman Sea MHW animation" onerror="this.parentElement.innerHTML='<div style=\'padding:2rem;color:#4a6a9a;font-family:JetBrains Mono,monospace;font-size:0.8rem;\'>[ GIF available in the GitHub repository ]</div>'">
+      <div class="gif-caption">// Animated visualization of the 2015–16 Tasman Sea marine heatwave track</div>
+    </div>
+  </section>
+
+  <!-- Section 2: Normalize and Visualize -->
+  <section>
+    <h2>Normalize and Visualize</h2>
+
+    <p>
+      The function <code>spn.m</code> normalizes marine heatwave (MHW) tracks with varying shapes and sizes, following the method described by Zhao et al. (2026). The core idea is to rescale all MHW tracks into a <strong>unified unit circle</strong>, enabling composite analysis despite differences in geometry and spatial extent.
+    </p>
+
+    <p>
+      Here, we use the 2015–16 Tasman Sea MHW track as a case study. First, load the SST anomaly dataset <code>data_anom</code>, which serves as a proxy for MHW intensity. The variable <code>data_anom</code> is a three-dimensional array whose temporal dimension must match the duration of the target MHW track (<strong>230 days</strong> in this case).
+    </p>
+
+    <div class="fn-sig">
+      [~, sst_sp, ~, x_full, y_full] = spn(tracks, lon_used, lat_used, data_anom, 0);
+      <br>
+      <span class="comment">// Fifth argument: 0 = exclude background, 1 = include background</span>
+    </div>
+
+    <p>
+      The output <code>sst_sp</code> contains the normalized property field mapped onto the unit circle. The corresponding normalized spatial coordinates are given by <code>x_full</code> and <code>y_full</code>.
+    </p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <div class="code-dots"><span></span><span></span><span></span></div>
+        <span class="code-lang">MATLAB · Visualization</span>
+      </div>
+      <pre><code><span class="var">xloc</span> = tracks.xloc;
+<span class="var">yloc</span> = tracks.yloc;
+<span class="var">ts</span>   = tracks.day;
+<span class="var">date_used</span> = <span class="fn">datevec</span>(<span class="fn">datenum</span>(<span class="num">1982</span>,<span class="num">1</span>,<span class="num">1</span>) + ts - <span class="num">1</span>);
+<span class="var">label_used</span> = <span class="fn">NaN</span>(<span class="fn">length</span>(lon_used), <span class="fn">length</span>(lat_used), <span class="fn">length</span>(xloc));
+
+<span class="kw">for</span> i = <span class="num">1</span>:<span class="fn">length</span>(xloc)
+    <span class="var">label_here</span> = <span class="fn">NaN</span>(<span class="fn">length</span>(lon_used), <span class="fn">length</span>(lat_used));
+    <span class="var">ind</span> = <span class="fn">sub2ind</span>([<span class="fn">length</span>(lon_used), <span class="fn">length</span>(lat_used)], ...
+                  <span class="fn">double</span>(xloc{i}), <span class="fn">double</span>(yloc{i}));
+    label_here(ind) = <span class="num">1</span>;
+    label_used(:,:,i) = label_here;
+<span class="kw">end</span>
+
+<span class="var">sst_here</span> = sst_sp{<span class="num">1</span>};
+<span class="kw">for</span> i = <span class="num">1</span>:<span class="fn">size</span>(sst_here, <span class="num">3</span>)
+    <span class="fn">figure</span>(<span class="str">'pos'</span>,[<span class="num">287 299 621 506</span>])
+    
+    <span class="fn">subplot</span>(<span class="num">2</span>,<span class="num">1</span>,<span class="num">1</span>)   <span class="cmt">% Original geographic track</span>
+    <span class="fn">m_pcolor</span>(lon_used, lat_used, (label_used(:,:,i))');
+    <span class="fn">shading</span> flat
+    <span class="fn">colormap</span>([<span class="num">1 0 0</span>]);  <span class="fn">caxis</span>([<span class="num">0 1.2</span>]);
+    <span class="fn">m_coast</span>(<span class="str">'patch'</span>,[<span class="num">0.7 0.7 0.7</span>],<span class="str">'linewidth'</span>,<span class="num">2</span>);
+    <span class="fn">m_grid</span>(<span class="str">'linewidth'</span>,<span class="num">2</span>);
+    <span class="fn">title</span>(<span class="fn">datestr</span>(date_used(i,:)),<span class="str">'fontsize'</span>,<span class="num">16</span>,<span class="str">'fontweight'</span>,<span class="str">'bold'</span>);
+    <span class="fn">set</span>(<span class="fn">gcf</span>,<span class="str">'color'</span>,<span class="str">'w'</span>);
+    
+    <span class="fn">subplot</span>(<span class="num">2</span>,<span class="num">1</span>,<span class="num">2</span>)   <span class="cmt">% Normalized unit circle</span>
+    <span class="fn">pcolor</span>(x_full, y_full, sst_here(:,:,i));
+    <span class="fn">colormap</span>(<span class="fn">cmocean</span>(<span class="str">'amp'</span>));
+    <span class="fn">shading</span> flat
+    s = <span class="fn">colorbar</span>(<span class="str">'fontsize'</span>,<span class="num">12</span>);
+    s.Label.String = <span class="str">'^{o}C'</span>;
+    <span class="fn">caxis</span>([<span class="num">0 5</span>]);
+    <span class="fn">xlabel</span>(<span class="str">'lon'</span>); <span class="fn">ylabel</span>(<span class="str">'lat'</span>);
+    <span class="fn">axis</span> equal;  <span class="fn">xlim</span>([<span class="num">-1 1</span>]);  <span class="fn">ylim</span>([<span class="num">-1 1</span>]);
+    <span class="fn">box</span> on;
+    <span class="fn">set</span>(<span class="fn">gca</span>,<span class="str">'fontsize'</span>,<span class="num">10</span>,<span class="str">'fontname'</span>,<span class="str">'consolas'</span>,<span class="str">'linewidth'</span>,<span class="num">2</span>);
+    <span class="fn">title</span>(<span class="fn">datestr</span>(date_used(i,:)),<span class="str">'fontsize'</span>,<span class="num">16</span>,<span class="str">'fontweight'</span>,<span class="str">'bold'</span>);
+    <span class="fn">set</span>(<span class="fn">gcf</span>,<span class="str">'color'</span>,<span class="str">'w'</span>);
+    
+    <span class="var">frame</span> = <span class="fn">getframe</span>(<span class="fn">gcf</span>);
+    <span class="var">im</span> = <span class="fn">frame2im</span>(frame);
+    [<span class="var">I</span>,<span class="var">map</span>] = <span class="fn">rgb2ind</span>(im, <span class="num">256</span>);
+    <span class="kw">if</span> i == <span class="num">1</span>
+        <span class="fn">imwrite</span>(I, map, <span class="str">'tas_mhw_norm.gif'</span>, <span class="str">'gif'</span>, <span class="str">'Loopcount'</span>, inf, <span class="str">'DelayTime'</span>, <span class="num">0.5</span>);
+    <span class="kw">else</span>
+        <span class="fn">imwrite</span>(I, map, <span class="str">'tas_mhw_norm.gif'</span>, <span class="str">'gif'</span>, <span class="str">'WriteMode'</span>, <span class="str">'append'</span>, <span class="str">'DelayTime'</span>, <span class="num">0.5</span>);
+    <span class="kw">end</span>
+    <span class="fn">close</span> all
+<span class="kw">end</span></code></pre>
+    </div>
+
+    <div class="gif-showcase">
+      <div class="gif-showcase-header">▶ OUTPUT · tas_mhw_norm.gif</div>
+      <img src="https://github.com/ZijieZhaoMMHW/MHW_tracking/blob/main/tas_mhw_norm.gif?raw=true" alt="Normalized MHW animation" onerror="this.parentElement.innerHTML='<div style=\'padding:2rem;color:#4a6a9a;font-family:JetBrains Mono,monospace;font-size:0.8rem;\'>[ GIF available in the GitHub repository ]</div>'">
+      <div class="gif-caption">// Top: original geographic track · Bottom: SST anomaly mapped to unit circle</div>
+    </div>
+
+    <div class="callout">
+      The SST anomalies associated with the MHW track have been normalized and mapped onto a unit circle, the radius of which represents the <strong>maximum spatial extent</strong> reached by the MHW track over its lifespan.
+    </div>
+  </section>
+
+  <!-- Section 3: With background -->
+  <section>
+    <h2>Normalize with Background Information</h2>
+
+    <p>
+      From the GIF in the previous section, only regions within the circle corresponding to the MHW track are shaded based on the given SST anomaly, while areas outside the MHW track are set to 0. To retain the background information, set the fourth input argument in <code>spn.m</code> to <code>1</code> instead of <code>0</code>:
+    </p>
+
+    <div class="fn-sig">
+      [~, sst_sp, ~, x_full, y_full] = spn(tracks, lon_used, lat_used, data_anom, <span style="color:var(--heat-amber)">1</span>);
+      <br>
+      <span class="comment">// Setting the flag to 1 retains all background SST anomalies</span>
+    </div>
+
+    <div class="gif-showcase">
+      <div class="gif-showcase-header">▶ OUTPUT · tas_mhw_norm1.gif</div>
+      <img src="https://github.com/ZijieZhaoMMHW/MHW_tracking/blob/main/tas_mhw_norm1.gif?raw=true" alt="Normalized MHW with background" onerror="this.parentElement.innerHTML='<div style=\'padding:2rem;color:#4a6a9a;font-family:JetBrains Mono,monospace;font-size:0.8rem;\'>[ GIF available in the GitHub repository ]</div>'">
+      <div class="gif-caption">// All SST anomalies normalized into the unit circle · land and out-of-domain regions shown as blank</div>
+    </div>
+
+    <div class="callout">
+      As shown, all SST anomalies are now retained and normalized into the unit circle, with land and regions outside the domain displayed as blank.
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <p>MHW_tracking · <a href="https://github.com/ZijieZhaoMMHW/MHW_tracking" target="_blank">github.com/ZijieZhaoMMHW/MHW_tracking</a> · Sun et al. (2023) · Zhao et al. (2026)</p>
+</footer>
+
+</body>
+</html>
