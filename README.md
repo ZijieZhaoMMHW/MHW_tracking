@@ -3,11 +3,11 @@ This package provides methods to track and normalize heatwave (HW) objects. It e
 By mapping multiscale HW events into a unified structural framework, this method allows direct comparison of event dynamics.
 Its applications are not limited to HWs and MHWs, but can also be extended to other extremes such as precipitation and drought.
 
-## Tracking - `hwtrack.m`  
+## Tracking - `mhwtrack.m`  
 The tracking method to identify and track spatially contiguous extremes that allows nouniform lon-lat grids.  
 ```
 %Example
-tracks = hwtrack(lon_used, lat_used, hw_ts, nums);
+tracks = mhwtrack(lon_used, lat_used, hw_ts, nums);
 ```
 Here, `lon_used` and `lat_used` are 1D vectors representing the longitudes and latitudes of the input data, respectively. `hw_ts` is a 3D binary field [lon, lat, time], where a value of 1 indicates the presence of a temperature extreme event and 0 indicates its absence. `nums` defines the minimum number of pixels required for a detected object. The output `tracks` contains the spatiotemporal trajectories of tracks.
 
