@@ -21,7 +21,12 @@ Analyzing track entities as sequences of moving objects from a composite perspec
 Examples of an output  
 ![HW Morphological](https://github.com/ZijieZhaoMMHW/MHW_tracking/blob/main/mhwvsmhw_dist7.gif)
 
+## Smoothing
+Spatial incoherence is commonly observed in extreme events identified from raw data. Therefore, spatial smoothing is typically applied to refine connected extreme objects in 2D maps. This step helps regularize object shapes while removing fragmented small-scale features, making subsequent tracking more meaningful and practically applicable. An example of this process at a given spatial scale can be found in this [example](https://github.com/ZijieZhaoMMHW/MHW_tracking/blob/main/example_used.m).
+
+![HW Morphological](https://github.com/ZijieZhaoMMHW/MHW_tracking/blob/main/KNN_test.png)
+
 ## Example
-A very rough and unpolished example can be found [here](https://github.com/ZijieZhaoMMHW/MHW_tracking/blob/main/example.md). Better documentions and more examples will be included later.
+A very rough and unpolished example for tracking and normalizing can be found [here](https://github.com/ZijieZhaoMMHW/MHW_tracking/blob/main/example.md). Better documentions and more examples will be included later.
 
 
