@@ -1,5 +1,4 @@
 function data_re=convzz(data_used,idx_full,ocean_idx)
-
 data_re=NaN(size(data_used));
 [x,y]=find(ocean_idx);
 for i=1:length(x)
