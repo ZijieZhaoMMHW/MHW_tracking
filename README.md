@@ -29,4 +29,14 @@ Spatial incoherence is commonly observed in extreme events identified from raw d
 ## Example
 A very rough and unpolished example for tracking and normalizing can be found [here](https://github.com/ZijieZhaoMMHW/MHW_tracking/blob/main/example.md). Better documentions and more examples will be included later.
 
+## Quirks
+Based on my current experiences, some quirks can happen during trackings.
+
+1. Even after spatial smoothing, some patches smaller than the smoothing scale can still show up. The `nums` parameter lets you set the minimum number of connected grid cells a patch needs before it can be tracked. For example, [Sun et al. (2023)](https://doi.org/10.1016/j.pocean.2022.102947) used 5° KNN smoothing on a 0.25° grid and then dropped patches with fewer than 441 connected grid cells, or `(5 / 0.25 + 1)²`. You can see the cutoff in [their code](https://github.com/cindyisok/MHWTracking/blob/60781455b95a2f5b2ff7d816682861db37a51cf9/code/conn.m#L7-L16).
+
+   This matters because 441 cells on a regular latitude–longitude grid cover more ocean near the equator than at higher latitudes. So near the equator, a patch has to be physically larger to make the cut. That’s worth keeping in mind when looking at the large equatorial events in [Sun et al. (2023)](https://doi.org/10.1016/j.pocean.2022.102947) and [Zhang et al. (2026)](https://doi.org/10.1038/s41612-026-01592-5), alongside differences in local ocean dynamics.
+
+   A similar issue could come up in the Tasman Sea. [Zhao et al. (2026)](https://doi.org/10.1038/s41598-026-40354-4) found that advection dominates at many individual grid cells, yet they counted fewer advection-driven events than surface-heat-flux-driven events. If advection tends to produce smaller, more isolated patches, a size cutoff could leave quite a few of them out of the track count, even if they cover relatively little area.
+   
+2. The current merging can cause two events stick together for awhile then suddenly merging into 1 for some events. Still exploring how to better resolve this....
 
