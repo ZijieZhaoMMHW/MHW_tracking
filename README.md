@@ -39,4 +39,3 @@ Based on my current experiences, some quirks can happen during trackings.
    A similar issue could come up in dynamic perspective. [Zhao et al. (2026)](https://doi.org/10.1038/s41598-026-40354-4) found that advection dominates at many individual grid cells, yet they counted fewer advection-driven events than surface-heat-flux-driven events. As advection tends to produce smaller, more isolated patches, a size cutoff could leave quite a few of them out of the track count, reducing the amount of adv-track.
    
 2. With the current merging rule, two events can sometimes stay in contact for a while before the algorithm suddenly treats them as a single event. I’m still exploring better ways to handle these cases.
-
